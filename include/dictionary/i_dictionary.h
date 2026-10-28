@@ -38,14 +38,14 @@ public:
         return find(key) != nullptr;
     }
 
-    const TValue& get(const TKey& key) const {
+    const TValue& get(const TKey& key) const { // полученное значение можно только читать
         const TValue* value = find(key);
         if (value == nullptr)
             throw KeyNotFoundException();
         return *value;
     }
 
-    TValue& get(const TKey& key) {
+    TValue& get(const TKey& key) { // полученное значение можно менять прямо внутри словаря
         TValue* value = find(key);
         if (value == nullptr)
             throw KeyNotFoundException();

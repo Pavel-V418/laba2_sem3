@@ -19,7 +19,7 @@ public:
     static constexpr int DEFAULT_CAPACITY = 8; // начальное число корзин
     static constexpr double DEFAULT_P = 4.0; // порог сжатия
     static constexpr double DEFAULT_Q = 2.0; // во сколько раз изменяем размер хеш-таблицы
-    static constexpr int MAX_CHAIN_LENGTH = 8; // 	цепочка длиннее считается "плохой коллизией"
+    static constexpr int MAX_CHAIN_LENGTH = 8; // цепочка длиннее считается "плохой коллизией"
 
     // static constexpr значит, что это константы класса, известные на этапе компиляции, общие для всех объектов.
 
@@ -123,7 +123,7 @@ public:
         bucket.remove_at(last);
         count_--;
 
-        // пояснение 7: n <= c / p -> сжимаем в q раз
+        // n <= c / p -> сжимаем в q раз
         if (count_ * p_ <= get_capacity()) {
             int new_capacity = shrunk_capacity();
             if (new_capacity < get_capacity())
@@ -137,7 +137,7 @@ public:
         seed_changed_since_resize_ = false;
     }
 
-    // ВНИМАНИЕ: итератор становится недействительным после add/remove/clear
+    // итератор становится недействительным после add/remove/clear
     // (корзины могут переехать в новый массив при перестройке)
     IteratorPtr get_iterator() const override {
         return std::make_unique<Iterator>(*buckets_);
@@ -180,15 +180,17 @@ private:
     double q_; // шаг изменения размера
     Hash hash_; // хешер
     HashCode seed_; // seed хеш-функции, меняется при перестройке из-за коллизий
-    bool seed_changed_since_resize_; // предохранитель от O(n^2) перестроек
+    bool seed_changed_since_resize_; // предохранитель от O(n^2) перестроек (разрешает менять seed не более 1 раза м.у изменениями размера)
     int rebuild_count_; // статистика для тестов
 
     // Хеш-функция: второй этап
+    // 1. Для текущего размера таблицы
     int index_for(const TKey& key) const {
         return index_for(key, get_capacity());
     }
 
     // возврат номера корзины
+    // 2. Для произвольного размера таблицы (нужен для rehash)
     int index_for(const  TKey& key, int capacity) const {
         HashCode h = mix_hash(hash_(key) ^ seed_); // unsigned int
         return static_cast<int>(h % static_cast<HashCode>(capacity)); // превращает большое число h в номер корзины

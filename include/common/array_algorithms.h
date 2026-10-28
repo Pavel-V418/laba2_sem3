@@ -103,7 +103,7 @@ std::unique_ptr<MutableArraySequence<T>> sorted_copy(const Sequence<T>& seq, Les
     return result;
 }
 
-// Проверка упорядоченности (для тестов)    
+// Проверка упорядоченности (для тестов)
 template<class T, class Less>
 bool is_sorted(const Sequence<T>& seq, Less less) {
     for (int i = 1; i < seq.get_length(); i++)

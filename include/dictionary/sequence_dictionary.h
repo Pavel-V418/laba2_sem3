@@ -31,7 +31,7 @@ public:
         int index = index_of(key);
         if (index < 0)
             return nullptr;
-        return const_cast<TValue*>(&items_.get(index).value); // const_cast снимает const
+        return const_cast<TValue*>(&items_.get(index).value); // const_cast снимает const (разрешено писать по этому адресу)
     }
 
     void add(const TKey& key, const TValue& value) override {
@@ -93,8 +93,8 @@ private:
         }
 
     private:
-        const MutableArraySequence<Item>& items_;
-        int index_;
+        const MutableArraySequence<Item>& items_; // ссылка на массив, в котором хранятся пары
+        int index_; // номер текущей пары
     };
 
 };

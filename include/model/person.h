@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <ostream>
 #include <stdexcept>
 
 // Информационный объект, по атрибутам которого строятся индексы.
@@ -81,14 +80,7 @@ private:
     int birth_year_;
 };
 
-// вывод в поток
-inline std::ostream& operator<<(std::ostream& os, const Person& p) {
-    os << "#" << p.get_id() << " " << p.get_full_name() << " (" << p.get_birth_year() << ")";
-    return os;
-}
-
-// Компараторы
-
+// Компараторы - правило сравнения, которое мы передаём сотрировке
 struct PersonByIdLess {
     bool operator()(const Person& a, const Person& b) const {
         return a.get_id() < b.get_id();
