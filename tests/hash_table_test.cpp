@@ -1,4 +1,4 @@
-// Блок 3: хеш-функции и хеш-таблица (М-5, М-5.1, О-1.4, пояснения 6-7 ТЗ)
+// Блок 3: хеш-функции и хеш-таблица
 
 #include <gtest/gtest.h>
 #include <random>
@@ -19,7 +19,7 @@ TEST(Hasher, EqualKeysEqualHashes) {
 
 TEST(Hasher, PairOrderMatters) {
     Hasher<Pair<int, int>> h;
-    EXPECT_NE(h(Pair<int, int>(1, 2)), h(Pair<int, int>(2, 1)));
+    EXPECT_NE(h(Pair<int, int>(1, 2)), h(Pair<int, int>(2, 1))); // важен порядок
 }
 
 /*============ Основные операции ============*/
@@ -60,7 +60,7 @@ TEST(HashTable, Exceptions) {
 }
 
 TEST(HashTable, InvalidParameters) {
-    // пояснение 7: p >= q > 1
+    // p >= q > 1
     EXPECT_THROW((HashTable<int, int>(8, 1.5, 2.0)), std::invalid_argument);   // p < q
     EXPECT_THROW((HashTable<int, int>(8, 2.0, 1.0)), std::invalid_argument);   // q == 1
     EXPECT_THROW((HashTable<int, int>(0)), std::invalid_argument);             // c == 0

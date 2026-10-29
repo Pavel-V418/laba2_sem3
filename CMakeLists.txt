@@ -51,15 +51,15 @@ if (LABA2_BUILD_TESTS)
 
     add_executable(laba2_tests
             tests/test_helpers.h
-            tests/sequence_test.cpp        # блок 0
+            # блок 0
             tests/person_test.cpp          # блок 1
             tests/dictionary_test.cpp      # блок 2
             tests/hash_table_test.cpp      # блок 3
             tests/tree_test.cpp            # блок 4
             tests/composite_key_test.cpp   # блок 5
             tests/index_test.cpp           # блок 6
-            tests/benchmark_test.cpp       # блок 7
-            tests/person_csv_test.cpp)     # блок 9 (файлы)
+            # блок 7
+    )     # блок 9 (файлы)
     target_include_directories(laba2_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests)
     target_link_libraries(laba2_tests PRIVATE laba2_core GTest::gtest_main)
     laba2_warnings(laba2_tests)

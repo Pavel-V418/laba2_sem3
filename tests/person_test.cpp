@@ -59,19 +59,19 @@ TEST(PersonGenerator, SizeAndUniqueIds) {
     ASSERT_EQ(people->get_length(), 500);
 
     // id - перестановка 1..500
-    DynamicArray<int> seen(501);
+    DynamicArray<int> seen(501); // счётчик
     for (int i = 0; i <= 500; i++)
         seen.set(0, i);
     for (int i = 0; i < 500; i++) {
         int id = people->get(i).get_id();
-        ASSERT_GE(id, 1);
-        ASSERT_LE(id, 500);
+        ASSERT_GE(id, 1); // >=
+        ASSERT_LE(id, 500); // <=
         seen.set(seen.get(id) + 1, id);
     }
     for (int id = 1; id <= 500; id++)
-        EXPECT_EQ(seen.get(id), 1);
+        EXPECT_EQ(seen.get(id), 1); // в конце все счётчики должны быть равны 1
 }
-
+// Два генератора с одинаковым зерном дают одинаковые данные
 TEST(PersonGenerator, SameSeedSameData) {
     PersonGenerator a(42), b(42);
     PersonSequencePtr x = a.generate(100);
@@ -87,14 +87,15 @@ TEST(PersonGenerator, Orders) {
 
     PersonSequencePtr reversed = generator.generate(300, DataOrder::Reversed, PersonByIdLess());
     for (int i = 1; i < reversed->get_length(); i++)
-        EXPECT_GT(reversed->get(i - 1).get_id(), reversed->get(i).get_id());
+        EXPECT_GT(reversed->get(i - 1).get_id(), reversed->get(i).get_id()); // >=
 }
 
+// Граничные размеры: 0 даёт пустую коллекцию (не ошибка), 1 - одного человека, отрицательный размер - исключение
 TEST(PersonGenerator, EdgeSizes) {
     PersonGenerator generator;
     EXPECT_EQ(generator.generate(0)->get_length(), 0);
     EXPECT_EQ(generator.generate(1)->get_length(), 1);
-    EXPECT_THROW(generator.generate(-1), std::invalid_argument);
+    EXPECT_THROW(generator.generate(-1), std::invalid_argument); // проверяется конструктор генератора без аргументов (seed по умолчанию).
 }
 
 /*============ array_algorithms ============*/
@@ -109,13 +110,13 @@ TEST(ArrayAlgorithms, MergeSortIsStable) {
     merge_sort(arr, [](const Pair<int, int>& a, const Pair<int, int>& b) { return a.key < b.key; });
 
     for (int i = 1; i < 8; i++) {
-        EXPECT_LE(arr.get(i - 1).key, arr.get(i).key);
+        EXPECT_LE(arr.get(i - 1).key, arr.get(i).key); // <=
         if (arr.get(i - 1).key == arr.get(i).key) {
-            EXPECT_LT(arr.get(i - 1).value, arr.get(i).value);   // равные не переставлены
+            EXPECT_LT(arr.get(i - 1).value, arr.get(i).value);   // равные не переставлены (<)
         }
     }
 }
-
+// проверка сортировки на пустом массиве и массиве из 1 элемента
 TEST(ArrayAlgorithms, MergeSortEdgeCases) {
     DynamicArray<int> empty(0);
     merge_sort(empty, [](int a, int b) { return a < b; });
@@ -140,7 +141,8 @@ TEST(ArrayAlgorithms, ReverseAndShuffle) {
     shuffle(arr, rng);
     merge_sort(arr, [](int a, int b) { return a < b; });   // перемешивание - перестановка
     for (int i = 0; i < 100; i++)
-        EXPECT_EQ(arr.get(i), i);
+        EXPECT_EQ(arr.get(i), i); // ни один элемент не потерян и не продублирован
+    // Если бы shuffle где-то записал элемент дважды, после сортировки появился бы повтор, и тест бы упал
 }
 
 TEST(ArrayAlgorithms, SortedCopyKeepsSource) {

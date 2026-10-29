@@ -1,7 +1,3 @@
-// Блок 2: интерфейс IDictionary, итератор, исключения, наивный SequenceDictionary.
-// Общие методы IDictionary (set, get_or_add, try_get, get_keys...) проверяем
-// на SequenceDictionary - они реализованы в базовом классе один раз для всех.
-
 #include <gtest/gtest.h>
 #include <string>
 
@@ -53,19 +49,19 @@ TEST(IDictionary, SetAddsOrReplaces) {
 TEST(IDictionary, GetReturnsReference) {
     SequenceDictionary<int, int> d;
     d.add(1, 10);
-    d.get(1) = 11;
+    d.get(1) = 11; // // присваиваем прямо в результат get
     EXPECT_EQ(d.get(1), 11);
 }
 
 TEST(IDictionary, GetOrAdd) {
     SequenceDictionary<int, int> d;
-    d.get_or_add(5) += 3;      // ключа не было - добавился 0
-    d.get_or_add(5) += 3;
+    d.get_or_add(5) += 3;      // ключа не было - добавился 0, стало 3
+    d.get_or_add(5) += 3;      // ключ уже есть -> 3 + 3
     EXPECT_EQ(d.get(5), 6);
     EXPECT_EQ(d.get_or_add(7, 100), 100);
 }
 
-TEST(IDictionary, TryGet) {
+TEST(IDictionary, TryGet) { // безопасная версия get
     SequenceDictionary<int, int> d;
     d.add(1, 10);
     EXPECT_TRUE(d.try_get(1).has_value());
@@ -76,7 +72,7 @@ TEST(IDictionary, TryGet) {
 TEST(IDictionary, KeysAndValues) {
     SequenceDictionary<int, int> d;
     for (int i = 0; i < 10; i++)
-        d.add(i, i * i);
+        d.add(i, i * i); // 0->0, 1->1, 2->4, ..., 9->81
     auto keys = d.get_keys();
     auto values = d.get_values();
     ASSERT_EQ(keys->get_length(), 10);
@@ -88,6 +84,7 @@ TEST(IDictionary, KeysAndValues) {
 TEST(IDictionary, ClearThenReuse) {
     SequenceDictionary<int, int> d;
     d.add(1, 1);
+    EXPECT_THROW(d.add(1,2), DuplicateKeyException);
     d.clear();
     EXPECT_TRUE(d.is_empty());
     d.add(1, 2);

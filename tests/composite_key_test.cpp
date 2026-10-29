@@ -1,4 +1,4 @@
-// Блок 5: составные ключи (И-5.2)
+// Блок 5: составные ключи
 
 #include <gtest/gtest.h>
 #include <climits>
@@ -53,7 +53,7 @@ TEST(CompositeKey, ThreeComponentsAndEmpty) {
 }
 
 TEST(CompositeKey, DefaultConstructor) {
-    CompositeKey<int, std::string> d;   // нужен DynamicArray
+    CompositeKey<int, std::string> d;
     EXPECT_EQ(d.get<0>(), 0);
     EXPECT_TRUE(d.get<1>().empty());
 }
@@ -63,7 +63,7 @@ TEST(CompositeKey, DefaultConstructor) {
 TEST(CompositeKey, GetAndMakeKey) {
     auto k = make_key(1990, "Ivanov", 'M');
     // строковый литерал хранится как std::string, а не как указатель
-    static_assert(std::is_same<decltype(k), CompositeKey<int, std::string, char>>::value,
+    static_assert(std::is_same<decltype(k), CompositeKey<int, std::string, char>>::value, // decltype - получить тип выражения на этапе компиляции
                   "make_key must convert string literals to std::string");
     static_assert(decltype(k)::SIZE == 3, "SIZE");
 
@@ -74,7 +74,7 @@ TEST(CompositeKey, GetAndMakeKey) {
     k.get<1>() = "Petrov";
     EXPECT_TRUE(k == make_key(1990, "Petrov", 'M'));
 }
-
+// Вывод ключа (composite_key_print.h): компоненты в скобках через запятую, пустой ключ - ()
 TEST(CompositeKey, Print) {
     std::ostringstream out;
     out << make_key(1990, "Ivanov", 7) << " " << CompositeKey<>();
@@ -86,21 +86,21 @@ TEST(CompositeKey, Print) {
 TEST(CompositeKey, Hash) {
     Hasher<CompositeKey<int, int>> h2;
     EXPECT_EQ(h2(make_key(1, 2)), h2(make_key(1, 2)));   // равные ключи - равные хеши
-    EXPECT_NE(h2(make_key(1, 2)), h2(make_key(2, 1)));   // порядок важен
+    EXPECT_NE(h2(make_key(1, 2)), h2(make_key(2, 1)));   // порядок важен // !=
 
     Hasher<CompositeKey<std::string, std::string, int>> h3;
     EXPECT_EQ(h3(make_key("Ivanov", "Ivan", 1990)), h3(make_key("Ivanov", "Ivan", 1990)));
     EXPECT_NE(h3(make_key("Ivanov", "Ivan", 1990)), h3(make_key("Ivan", "Ivanov", 1990)));
 }
-
+// тест качества хеша
 TEST(CompositeKey, GridHasFewCollisions) {
     HashTable<CompositeKey<int, int>, int> table;
     for (int i = 0; i < 100; i++)
         for (int j = 0; j < 100; j++)
             table.add(make_key(i, j), i * 100 + j);
-    EXPECT_EQ(table.get_count(), 10000);
-    EXPECT_EQ(table.get(make_key(42, 17)), 4217);
-    EXPECT_LE(table.get_max_chain_length(), (HashTable<int, int>::MAX_CHAIN_LENGTH + 2));
+    EXPECT_EQ(table.get_count(), 10000); // все 10 000 ключей добавились (дубликатов нет — значит, == различает ключи)
+    EXPECT_EQ(table.get(make_key(42, 17)), 4217); // произвольный ключ находится с правильным значением
+    EXPECT_LE(table.get_max_chain_length(), (HashTable<int, int>::MAX_CHAIN_LENGTH + 2)); // самая длинная цепочка не превышает предел таблицы
 }
 
 /*============ В словарях ============*/
@@ -149,7 +149,7 @@ class CompositeKeyTreeTest : public ::testing::Test {};
 
 using CompositeTrees = ::testing::Types<BinarySearchTree<CompositeKey<int, int>, Person>,
                                         AvlTree<CompositeKey<int, int>, Person>>;
-TYPED_TEST_SUITE(CompositeKeyTreeTest, CompositeTrees);
+TYPED_TEST_SUITE(CompositeKeyTreeTest, CompositeTrees); // регистрирует тестовый набор
 
 TYPED_TEST(CompositeKeyTreeTest, PrefixRangeByYear) {
     using Key = CompositeKey<int, int>;
